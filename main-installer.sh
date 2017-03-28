@@ -5,8 +5,8 @@
 # E-Mail: TigerLinux@Gmail.com
 #
 # Main Installer Script
-# Version: 1.0.2.ub1604lts "Siberian Lynx"
-# March 25, 2017
+# Version: 1.1.0.ub1604lts "Siberian Lynx"
+# March 27, 2017
 #
 
 PATH=$PATH:/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin
@@ -27,12 +27,13 @@ PATH=$PATH:/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin
 #     - Cinder.
 #     - Neutron.
 #     - Nova.
-#     - Ceilometer.
+#     - Ceilometer (with gnocchi and aodh).
 #     - Heat.
 #     - Trove.
 #     - Sahara.
 #     - Manila.
 #     - Designate.
+#     - Magnum.
 #     - Horizon.
 # 7.- Basic SNMP Support.
 # 8.- Post-install with maintenance crontabs and scripts
@@ -71,10 +72,10 @@ case $1 in
 
 	echo ""
 	echo "OPENSTACK UNATTENDED INSTALLER"
-	echo "Flavor: OpenStack NEWTON for Ubuntu 16.04lts"
+	echo "Flavor: OpenStack OCATA for Ubuntu 16.04lts"
 	echo "Made by: Reynaldo R. Martinez P."
 	echo "E-Mail: TigerLinux@Gmail.com"
-	echo "Version 1.0.2.ub1604lts \"Siberian Lynx\" - March 25, 2017"
+	echo "Version 1.1.0.ub1604lts \"Siberian Lynx\" - March 27, 2017"
 	echo ""
 	echo "I'll verify all requiremens"
 	echo "If any requirement is not met, I'll stop and inform what's missing"
@@ -83,7 +84,7 @@ case $1 in
 	echo "- OS: Ubuntu Server 16.04 LTS x86_64 fully updated"
 	echo "- This script must be executed by root account (don't use sudo please)"
 	echo "- All ubuntu original repositories must be enabled and available"
-	echo "- Ubuntu Cloud Archive NEWTON repository must be enabled and available"
+	echo "- Ubuntu Cloud Archive OCATA repository must be enabled and available"
 	echo "- OpenVSwitch must be installed and configured with at least br-int bridge"
 	echo "- If you wish to install swift, the filesystem should be mounted in /srv/node"
 	echo ""
@@ -458,6 +459,24 @@ case $1 in
                         exit 0
                 fi
 	fi
+
+        if [ $magnuminstall == "yes" ]
+        then
+                echo ""
+                echo "Installing OPENSTACK MAGNUM"
+
+                ./modules/magnuminstall.sh
+
+                if [ -f /etc/openstack-control-script-config/magnum-installed ]
+                then
+                        echo "OPENSTACK MAGNUM INSTALLED"
+                else
+                        echo ""
+                        echo "Magnum installation failed. Aborting !!"
+                        echo ""
+                        exit 0
+                fi
+        fi
 
 	if [ $snmpinstall == "yes" ]
 	then

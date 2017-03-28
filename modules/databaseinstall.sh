@@ -386,15 +386,29 @@ then
 		sleep 5
 		sync
 
+		echo "Magnum"
+		echo "CREATE DATABASE $magnumdbname default character set utf8;"|$mysqlcommand
+		echo "GRANT ALL ON $magnumdbname.* TO '$magnumdbuser'@'%' IDENTIFIED BY '$magnumdbpass';"|$mysqlcommand
+		echo "GRANT ALL ON $magnumdbname.* TO '$magnumdbuser'@'localhost' IDENTIFIED BY '$magnumdbpass';"|$mysqlcommand
+		echo "GRANT ALL ON $magnumdbname.* TO '$magnumdbuser'@'$magnumhost' IDENTIFIED BY '$magnumdbpass';"|$mysqlcommand
+		for extrahost in $extramagnumhosts
+		do
+			echo "GRANT ALL ON $magnumdbname.* TO '$magnumdbuser'@'$extrahost' IDENTIFIED BY '$magnumdbpass';"|$mysqlcommand
+		done
+		echo "FLUSH PRIVILEGES;"|$mysqlcommand
+		sync
+		sleep 5
+		sync
+
 		echo ""
-		echo "Databases Created:"
+		echo "Databases list:"
 		echo "show databases;"|$mysqlcommand
 
 		checkdbcreation=`echo "show databases;"|$mysqlcommand|grep -ci $horizondbname`
 		if [ $checkdbcreation == "0" ]
 		then
 			echo ""
-			echo "Database Creation FAILED. Aborting !"
+			echo "DB Creation FAILED. Aborting !"
 			echo ""
 			rm -f /etc/openstack-control-script-config/db-installed
 			exit 0
@@ -531,15 +545,24 @@ then
 		sleep 5
 		sync
 
+		echo "Magnum:" 
+		echo "CREATE user $magnumdbuser;"|$psqlcommand
+		echo "ALTER user $magnumdbuser with password '$magnumdbpass'"|$psqlcommand
+		echo "CREATE DATABASE $magnumdbname"|$psqlcommand
+		echo "GRANT ALL PRIVILEGES ON database $magnumdbname TO $magnumdbuser;"|$psqlcommand
+		sync
+		sleep 5
+		sync
+
 		echo ""
-		echo "Databases Created:"
+		echo "Database list:"
 		echo "\list"|$psqlcommand
 
 		checkdbcreation=`echo "\list"|$psqlcommand|grep -ci $horizondbname`
 		if [ $checkdbcreation == "0" ]
 		then
 			echo ""
-			echo "Database Creation FAILED. Aborting !"
+			echo "DB Creation FAILED. Aborting !"
 			echo ""
 			rm -f /etc/openstack-control-script-config/db-installed
 			exit 0

@@ -285,6 +285,13 @@ then
 	DEBIAN_FRONTEND=noninteractive aptitude -y install python-sahara-dashboard
 fi
 
+if [ $neutroninstall == "yes" ]
+then
+        mkdir -p /var/lib/openstack-dashboard/secret-key/
+        touch /var/lib/openstack-dashboard/secret-key/.secret_key_store
+        DEBIAN_FRONTEND=noninteractive aptitude -y install python-neutron-lbaas-dashboard
+fi
+
 mkdir -p /var/lib/openstack-dashboard/secret-key/
 touch /var/lib/openstack-dashboard/secret-key/.secret_key_store
 

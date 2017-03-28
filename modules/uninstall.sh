@@ -68,6 +68,8 @@ killall -9 -u manila >/dev/null 2>&1
 killall -9 -u ceilometer >/dev/null 2>&1
 killall -9 -u aodh >/dev/null 2>&1
 killall -9 -u swift >/dev/null 2>&1
+killall -9 -u gnocchi >/dev/null 2>&1
+killall -9 -u magnum >/dev/null 2>&1
 
 echo ""
 echo "Erasing OpenStack Packages"
@@ -133,7 +135,8 @@ DEBIAN_FRONTEND=noninteractive aptitude -y purge virt-top ceilometer-agent-centr
 	trove-api trove-taskmanager sahara-common sahara manila-api manila-scheduler python-manilaclient \
 	manila-share manila-common designate designate-api designate-central designate-common designate-doc \
 	designate-mdns designate-pool-manager designate-sink designate-zone-manager python-designate \
-	gnocchi-common gnocchi-metricd gnocchi-statsd python-gnocchi gnocchi-api python-gnocchiclient
+	gnocchi-common gnocchi-metricd gnocchi-statsd python-gnocchi gnocchi-api python-gnocchiclient \
+	magnum-api magnum-conductor magnum-common python-magnum python-magnumclient
 
 
 DEBIAN_FRONTEND=noninteractive aptitude -y purge bind9
@@ -212,6 +215,7 @@ userdel -r -f manila
 userdel -f -r designate
 userdel -f -r named
 userdel -f -r gnocchi
+userdel -f -r magnum
 
 echo "Deleting Remaining Files"
 
@@ -279,6 +283,10 @@ rm -fr  /etc/qpid \
 	/etc/designate \
 	/var/lib/designate \
 	/var/log/designate \
+        /var/oslock \
+        /var/log/magnum \
+        /var/lib/magnum \
+        /etc/magnum \
 	/etc/apache2/sites-enabled/wsgi-ceilometer.conf \
 	/etc/apache2/sites-enabled/wsgi-aodh.conf \
 	/etc/apache2/sites-available/wsgi-aodh.conf \
