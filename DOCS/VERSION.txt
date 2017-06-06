@@ -1,5 +1,5 @@
 Installer Version:
 
-1.1.2.ub1604lts "Siberian Lynx"
+1.1.3.ub1604lts "Siberian Lynx"
 
 ONLY FOR OPENSTACK RELEASE 15 "OCATA"
