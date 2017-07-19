@@ -170,22 +170,24 @@ else
 	rm -f /tmp/iptables-seed.txt
 	killall -9 dnsmasq > /dev/null 2>&1
 	killall -9 libvirtd > /dev/null 2>&1
-	DEBIAN_FRONTEND=noninteractive aptitude -y install qemu kvm qemu-kvm libvirt-bin libvirt-doc
+	# DEBIAN_FRONTEND=noninteractive aptitude -y install qemu kvm qemu-kvm libvirt-bin libvirt-doc
+	DEBIAN_FRONTEND=noninteractive aptitude -y install qemu qemu-kvm libvirt-bin libvirt-doc
 	rm -f /etc/libvirt/qemu/networks/default.xml
 	rm -f /etc/libvirt/qemu/networks/autostart/default.xml
 	# /etc/init.d/libvirt-bin stop
 	# update-rc.d libvirt-bin enable
-	systemctl stop libvirt-bin stop
-	systemctl enable libvirt-bin
+	systemctl enable libvirtd
+	systemctl stop libvirtd
+	systemctl stop libvirt-bin
+	# systemctl enable libvirt-bin
 	ifconfig virbr0 down
-	DEBIAN_FRONTEND=noninteractive aptitude -y install dnsmasq dnsmasq-utils
-	# /etc/init.d/dnsmasq stop
-	systemctl stop dnsmasq
-	systemctl disable dnsmasq
-	update-rc.d dnsmasq disable
+	# DEBIAN_FRONTEND=noninteractive aptitude -y install dnsmasq dnsmasq-utils
+	# systemctl stop dnsmasq
+	# systemctl disable dnsmasq
+	# update-rc.d dnsmasq disable
 	killall -9 dnsmasq > /dev/null 2>&1
 	killall -9 libvirtd > /dev/null 2>&1
-	sed -r -i 's/ENABLED\=1/ENABLED\=0/' /etc/default/dnsmasq
+	# sed -r -i 's/ENABLED\=1/ENABLED\=0/' /etc/default/dnsmasq
 	/etc/init.d/netfilter-persistent flush
 	iptables -A INPUT -p tcp -m multiport --dports 22 -j ACCEPT
 	/etc/init.d/netfilter-persistent save
@@ -195,20 +197,21 @@ else
 	sed -i 's/#listen_tcp = 1/listen_tcp = 1/g' /etc/libvirt/libvirtd.conf
 	sed -i 's/#auth_tcp = "sasl"/auth_tcp = "none"/g' /etc/libvirt/libvirtd.conf
 	# sed -i.ori 's/libvirtd_opts="-d"/libvirtd_opts="-d -l"/g' /etc/default/libvirt-bin
-	cat /etc/default/libvirt-bin > /etc/default/libvirt-bin.BACKUP
-	echo "start_libvirtd=\"yes\"" > /etc/default/libvirt-bin
-	echo "libvirtd_opts=\"-d -l\"" >> /etc/default/libvirt-bin
+	# cat /etc/default/libvirt-bin > /etc/default/libvirt-bin.BACKUP
+	# echo "start_libvirtd=\"yes\"" > /etc/default/libvirt-bin
+	# echo "libvirtd_opts=\"-d -l\"" >> /etc/default/libvirt-bin
 	cat /etc/default/libvirtd > /etc/default/libvirtd.BACKUP
-	cat /etc/default/libvirt-bin > /etc/default/libvirtd
+	echo "start_libvirtd=\"yes\"" > /etc/default/libvirtd
+	echo "libvirtd_opts=\"-d -l\"" >> /etc/default/libvirtd
 
 	# /etc/init.d/libvirt-bin restart
-	systemctl stop libvirt-bin
+	# systemctl stop libvirt-bin
 	systemctl stop libvirtd
 	killall -9 dnsmasq > /dev/null 2>&1
 	killall -9 libvirtd > /dev/null 2>&1
-	systemctl start libvirt-bin
+	# systemctl start libvirt-bin
 	systemctl start libvirtd
-	systemctl enable libvirt-bin
+	# systemctl enable libvirt-bin
 	systemctl enable libvirtd
 	virsh net-destroy default
 

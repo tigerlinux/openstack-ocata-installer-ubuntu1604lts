@@ -1,3 +1,9 @@
+1.1.4.ub1604lts - July 19, 2017
+
+- Fixed dnsmasq installation errors on main
+  requeriments install module preventing the
+  installer to complete the installation.
+
 1.1.3.ub1604lts - June 06, 2017
 
 - Added extra code in database installation. This
