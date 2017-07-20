@@ -1,3 +1,11 @@
+1.1.7.ub1604lts - July 20, 2017
+
+- Added even more extra-checks and more install
+  secuences on requeriments and novainstall modules
+  in order to really ensure libvirt correct packages
+  installation across some possible operating system
+  configurations.
+
 1.1.6.ub1604lts - July 20, 2017
 
 - More changes and extra-checks to libvirt modules in

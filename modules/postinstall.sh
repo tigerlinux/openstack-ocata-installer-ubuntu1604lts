@@ -104,8 +104,6 @@ sleep 1
 /usr/local/bin/openstack-control.sh disable
 /usr/local/bin/openstack-control.sh start
 
-openstack-control.sh disable
-
 echo "[Unit]" > /etc/systemd/system/openstack-automated.service
 echo "Description=OpenStack AutoStart" >> /etc/systemd/system/openstack-automated.service
 echo "After=network.target rc-local.service rc.local.service" >> /etc/systemd/system/openstack-automated.service

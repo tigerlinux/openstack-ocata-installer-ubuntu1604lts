@@ -424,10 +424,10 @@ sync
 crudini --set /etc/nova/nova.conf DEFAULT config_drive_format vfat
 # crudini --set /etc/nova/nova.conf libvirt live_migration_tunnelled True
 crudini --set /etc/nova/nova.conf libvirt live_migration_tunnelled False
-# aa-disable /etc/apparmor.d/usr.sbin.libvirtd
-# systemctl stop libvirtd
-# killall -9 libvirtd
-# systemctl start libvirtd
+aa-disable /etc/apparmor.d/usr.sbin.libvirtd
+systemctl stop libvirtd
+killall -9 libvirtd >/dev/null 2>&1
+systemctl start libvirtd
 
 sed -r -i 's/NOVA_ENABLE\=false/NOVA_ENABLE\=true/' /etc/default/nova-common > /dev/null 2>&1
 

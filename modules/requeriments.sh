@@ -163,46 +163,63 @@ then
 	echo "Pre-requirements already installed"
 	echo ""
 else
-	apt-get -y purge dnsmasq-base
-	apt-get -y purge libvirt-bin
-	apt-get -y purge libvirt-daemon-system
-	apt-get -y purge qemu
-	apt-get -y purge ubuntu-server
-	userdel -r -f libvirt-qemu
-	userdel -r -f libvirt-dnsmasq
-	rm -rf /etc/libvirt
-	rm -f /etc/default/libvirt*	
-	echo "iptables-persistent iptables-persistent/autosave_v6 boolean true" > /tmp/iptables-seed.txt
-	echo "iptables-persistent iptables-persistent/autosave_v4 boolean true" >> /tmp/iptables-seed.txt
-	debconf-set-selections /tmp/iptables-seed.txt
-	DEBIAN_FRONTEND=noninteractive aptitude -y install iptables iptables-persistent
-	/etc/init.d/netfilter-persistent flush
-	/etc/init.d/netfilter-persistent save
-	update-rc.d netfilter-persistent enable
-	systemctl enable netfilter-persistent
-	/etc/init.d/netfilter-persistent save
-	rm -f /tmp/iptables-seed.txt
-	killall -9 dnsmasq > /dev/null 2>&1
-	killall -9 libvirtd > /dev/null 2>&1
-	DEBIAN_FRONTEND=noninteractive aptitude -y install libvirt-daemon-system
-	virsh net-destroy default
-	systemctl enable libvirtd
-	systemctl stop libvirtd
-	rm -f /etc/libvirt/qemu/networks/default.xml
-	rm -f /etc/libvirt/qemu/networks/autostart/default.xml
-	killall -9 dnsmasq > /dev/null 2>&1
-	killall -9 libvirtd > /dev/null 2>&1
-	/etc/init.d/netfilter-persistent flush
-	iptables -A INPUT -p tcp -m multiport --dports 22 -j ACCEPT
-	/etc/init.d/netfilter-persistent save
-	sed -i.ori 's/#listen_tls = 0/listen_tls = 0/g' /etc/libvirt/libvirtd.conf
-	sed -i 's/#listen_tcp = 1/listen_tcp = 1/g' /etc/libvirt/libvirtd.conf
-	sed -i 's/#auth_tcp = "sasl"/auth_tcp = "none"/g' /etc/libvirt/libvirtd.conf
-	cat /etc/default/libvirtd > /etc/default/libvirtd.BACKUP
-	echo "start_libvirtd=\"yes\"" > /etc/default/libvirtd
-	echo "libvirtd_opts=\"--listen\"" >> /etc/default/libvirtd
-	systemctl start libvirtd
-	systemctl status libvirtd
+	#
+	# Next seems to be overkill, but there is a package that breah everything
+	# This secuence ensures proper installation of libvirtd packages
+        trylist="try1 try2 try3"
+        for mytry in $trylist
+        do
+	        echo "**************************************************************"
+	        echo $mytry
+	        echo "**************************************************************"
+	        sleep 5
+		apt-get -y purge dnsmasq-base
+		apt-get -y purge libvirt-bin
+		apt-get -y purge libvirt-daemon-system
+		apt-get -y purge qemu
+		apt-get -y purge ubuntu-server
+		userdel -r -f libvirt-qemu
+		userdel -r -f libvirt-dnsmasq
+		rm -rf /etc/libvirt
+		rm -f /etc/default/libvirt*	
+		echo "iptables-persistent iptables-persistent/autosave_v6 boolean true" > /tmp/iptables-seed.txt
+		echo "iptables-persistent iptables-persistent/autosave_v4 boolean true" >> /tmp/iptables-seed.txt
+		debconf-set-selections /tmp/iptables-seed.txt
+		DEBIAN_FRONTEND=noninteractive aptitude -y install iptables iptables-persistent
+		/etc/init.d/netfilter-persistent flush
+		/etc/init.d/netfilter-persistent save
+		update-rc.d netfilter-persistent enable
+		systemctl enable netfilter-persistent
+		/etc/init.d/netfilter-persistent save
+		rm -f /tmp/iptables-seed.txt
+		killall -9 dnsmasq > /dev/null 2>&1
+		killall -9 libvirtd > /dev/null 2>&1
+		DEBIAN_FRONTEND=noninteractive aptitude -y install libvirt-daemon-system
+		virsh net-destroy default
+		systemctl enable libvirtd
+		systemctl stop libvirtd
+		rm -f /etc/libvirt/qemu/networks/default.xml
+		rm -f /etc/libvirt/qemu/networks/autostart/default.xml
+		killall -9 dnsmasq > /dev/null 2>&1
+		killall -9 libvirtd > /dev/null 2>&1
+		/etc/init.d/netfilter-persistent flush
+		iptables -A INPUT -p tcp -m multiport --dports 22 -j ACCEPT
+		/etc/init.d/netfilter-persistent save
+		sed -i 's/#listen_tls = 0/listen_tls = 0/g' /etc/libvirt/libvirtd.conf
+		sed -i 's/#listen_tcp = 1/listen_tcp = 1/g' /etc/libvirt/libvirtd.conf
+		sed -i 's/#auth_tcp = "sasl"/auth_tcp = "none"/g' /etc/libvirt/libvirtd.conf
+		cat /etc/default/libvirtd > /etc/default/libvirtd.BACKUP
+		echo "start_libvirtd=\"yes\"" > /etc/default/libvirtd
+		echo "libvirtd_opts=\"--listen\"" >> /etc/default/libvirtd
+		systemctl start libvirtd
+		systemctl status libvirtd
+	done
+
+	DEBIAN_FRONTEND=noninteractive aptitude -y install pm-utils saidar sysstat iotop ethtool iputils-arping \
+        	libsysfs2 btrfs-tools cryptsetup cryptsetup-bin febootstrap jfsutils libconfig8-dev \
+	        libcryptsetup4 libguestfs0 libhivex0 libreadline5 reiserfsprogs scrub xfsprogs \
+        	zerofree zfs-fuse virt-top curl nmon fuseiso9660 libiso9660-8 genisoimage sudo sysfsutils \
+	        glusterfs-client glusterfs-common nfs-client nfs-common libguestfs-tools arptables
 
 	iptables -A INPUT -p tcp -m multiport --dports 16509 -j ACCEPT
 	/etc/init.d/netfilter-persistent save
