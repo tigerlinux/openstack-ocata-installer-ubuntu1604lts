@@ -169,6 +169,7 @@ killall -9 libvirtd > /dev/null 2>&1
 userdel -r -f libvirt-qemu
 userdel -r -f libvirt-dnsmasq
 rm -rf /etc/libvirt
+rm -f /etc/default/libvirt*
 
 DEBIAN_FRONTEND=noninteractive apt-get -y clean
 DEBIAN_FRONTEND=noninteractive apt-get -y autoclean

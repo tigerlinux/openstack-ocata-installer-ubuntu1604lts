@@ -1,3 +1,9 @@
+1.1.6.ub1604lts - July 20, 2017
+
+- More changes and extra-checks to libvirt modules in
+  order to cover possible packaging problems in the
+  future.
+
 1.1.5.ub1604lts - July 20, 2017
 
 - Finally fixed all old-dependencies to libvirt-bin

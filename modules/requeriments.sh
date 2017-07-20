@@ -139,6 +139,8 @@ apt-get -y install crudini python-iniparse debconf-utils
 echo "libguestfs0 libguestfs/update-appliance boolean false" > /tmp/libguest-seed.txt
 debconf-set-selections /tmp/libguest-seed.txt
 
+
+
 DEBIAN_FRONTEND=noninteractive aptitude -y install pm-utils saidar sysstat iotop ethtool iputils-arping \
 	libsysfs2 btrfs-tools cryptsetup cryptsetup-bin febootstrap jfsutils libconfig8-dev \
 	libcryptsetup4 libguestfs0 libhivex0 libreadline5 reiserfsprogs scrub xfsprogs \
@@ -161,6 +163,15 @@ then
 	echo "Pre-requirements already installed"
 	echo ""
 else
+	apt-get -y purge dnsmasq-base
+	apt-get -y purge libvirt-bin
+	apt-get -y purge libvirt-daemon-system
+	apt-get -y purge qemu
+	apt-get -y purge ubuntu-server
+	userdel -r -f libvirt-qemu
+	userdel -r -f libvirt-dnsmasq
+	rm -rf /etc/libvirt
+	rm -f /etc/default/libvirt*	
 	echo "iptables-persistent iptables-persistent/autosave_v6 boolean true" > /tmp/iptables-seed.txt
 	echo "iptables-persistent iptables-persistent/autosave_v4 boolean true" >> /tmp/iptables-seed.txt
 	debconf-set-selections /tmp/iptables-seed.txt
