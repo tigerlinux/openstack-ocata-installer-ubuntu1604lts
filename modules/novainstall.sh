@@ -117,6 +117,7 @@ then
 		nova-api \
 		nova-common \
 		nova-compute \
+		nova-compute-libvirt \
 		nova-conductor \
 		nova-console \
 		nova-consoleauth \
@@ -132,7 +133,7 @@ then
 		apache2 \
 		libapache2-mod-wsgi
 else
-	DEBIAN_FRONTEND=noninteractive aptitude -y install $nova_kvm_or_qemu
+	DEBIAN_FRONTEND=noninteractive aptitude -y install $nova_kvm_or_qemu nova-compute-libvirt
 fi
 
 echo "Done"

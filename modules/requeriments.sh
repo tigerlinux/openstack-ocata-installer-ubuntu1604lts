@@ -139,13 +139,16 @@ apt-get -y install crudini python-iniparse debconf-utils
 echo "libguestfs0 libguestfs/update-appliance boolean false" > /tmp/libguest-seed.txt
 debconf-set-selections /tmp/libguest-seed.txt
 
-DEBIAN_FRONTEND=noninteractive aptitude -y install pm-utils saidar sysstat iotop ethtool iputils-arping libsysfs2 btrfs-tools \
-	cryptsetup cryptsetup-bin febootstrap jfsutils libconfig8-dev \
+DEBIAN_FRONTEND=noninteractive aptitude -y install pm-utils saidar sysstat iotop ethtool iputils-arping \
+	libsysfs2 btrfs-tools cryptsetup cryptsetup-bin febootstrap jfsutils libconfig8-dev \
 	libcryptsetup4 libguestfs0 libhivex0 libreadline5 reiserfsprogs scrub xfsprogs \
 	zerofree zfs-fuse virt-top curl nmon fuseiso9660 libiso9660-8 genisoimage sudo sysfsutils \
 	glusterfs-client glusterfs-common nfs-client nfs-common libguestfs-tools arptables
 
 rm -r /tmp/libguest-seed.txt
+
+DEBIAN_FRONTEND=noninteractive aptitude -y install coreutils grep debianutils base-files lsb-release curl \
+	wget net-tools git iproute openssh-client sed openssl xz-utils bzip2 util-linux procps mount lvm2
 
 #
 # Then we proceed to configure Libvirt and iptables, and also to verify proper installation
@@ -170,50 +173,25 @@ else
 	rm -f /tmp/iptables-seed.txt
 	killall -9 dnsmasq > /dev/null 2>&1
 	killall -9 libvirtd > /dev/null 2>&1
-	# DEBIAN_FRONTEND=noninteractive aptitude -y install qemu kvm qemu-kvm libvirt-bin libvirt-doc
-	DEBIAN_FRONTEND=noninteractive aptitude -y install qemu qemu-kvm libvirt-bin libvirt-doc
-	rm -f /etc/libvirt/qemu/networks/default.xml
-	rm -f /etc/libvirt/qemu/networks/autostart/default.xml
-	# /etc/init.d/libvirt-bin stop
-	# update-rc.d libvirt-bin enable
+	DEBIAN_FRONTEND=noninteractive aptitude -y install libvirt-daemon-system
+	virsh net-destroy default
 	systemctl enable libvirtd
 	systemctl stop libvirtd
-	systemctl stop libvirt-bin
-	# systemctl enable libvirt-bin
-	ifconfig virbr0 down
-	# DEBIAN_FRONTEND=noninteractive aptitude -y install dnsmasq dnsmasq-utils
-	# systemctl stop dnsmasq
-	# systemctl disable dnsmasq
-	# update-rc.d dnsmasq disable
+	rm -f /etc/libvirt/qemu/networks/default.xml
+	rm -f /etc/libvirt/qemu/networks/autostart/default.xml
 	killall -9 dnsmasq > /dev/null 2>&1
 	killall -9 libvirtd > /dev/null 2>&1
-	# sed -r -i 's/ENABLED\=1/ENABLED\=0/' /etc/default/dnsmasq
 	/etc/init.d/netfilter-persistent flush
 	iptables -A INPUT -p tcp -m multiport --dports 22 -j ACCEPT
 	/etc/init.d/netfilter-persistent save
-	# /etc/init.d/libvirt-bin start
-
 	sed -i.ori 's/#listen_tls = 0/listen_tls = 0/g' /etc/libvirt/libvirtd.conf
 	sed -i 's/#listen_tcp = 1/listen_tcp = 1/g' /etc/libvirt/libvirtd.conf
 	sed -i 's/#auth_tcp = "sasl"/auth_tcp = "none"/g' /etc/libvirt/libvirtd.conf
-	# sed -i.ori 's/libvirtd_opts="-d"/libvirtd_opts="-d -l"/g' /etc/default/libvirt-bin
-	# cat /etc/default/libvirt-bin > /etc/default/libvirt-bin.BACKUP
-	# echo "start_libvirtd=\"yes\"" > /etc/default/libvirt-bin
-	# echo "libvirtd_opts=\"-d -l\"" >> /etc/default/libvirt-bin
 	cat /etc/default/libvirtd > /etc/default/libvirtd.BACKUP
 	echo "start_libvirtd=\"yes\"" > /etc/default/libvirtd
-	echo "libvirtd_opts=\"-d -l\"" >> /etc/default/libvirtd
-
-	# /etc/init.d/libvirt-bin restart
-	# systemctl stop libvirt-bin
-	systemctl stop libvirtd
-	killall -9 dnsmasq > /dev/null 2>&1
-	killall -9 libvirtd > /dev/null 2>&1
-	# systemctl start libvirt-bin
+	echo "libvirtd_opts=\"--listen\"" >> /etc/default/libvirtd
 	systemctl start libvirtd
-	# systemctl enable libvirt-bin
-	systemctl enable libvirtd
-	virsh net-destroy default
+	systemctl status libvirtd
 
 	iptables -A INPUT -p tcp -m multiport --dports 16509 -j ACCEPT
 	/etc/init.d/netfilter-persistent save
@@ -239,7 +217,7 @@ then
 fi
 
 
-testlibvirt=`dpkg -l libvirt-bin 2>/dev/null|tail -n 1|grep -ci ^ii`
+testlibvirt=`dpkg -l libvirt-daemon-system 2>/dev/null|tail -n 1|grep -ci ^ii`
 
 if [ $testlibvirt == "1" ]
 then

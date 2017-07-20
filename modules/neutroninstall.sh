@@ -229,6 +229,7 @@ then
 	echo "Configuring DNSMASQ"
 
 	sleep 5
+	echo "#" >> /etc/dnsmasq.conf
 	cat /etc/dnsmasq.conf > $dnsmasq_config_file
 	mkdir -p /etc/dnsmasq-neutron.d
 	echo "user=neutron" >> $dnsmasq_config_file

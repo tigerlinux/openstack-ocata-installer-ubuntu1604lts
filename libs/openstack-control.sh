@@ -62,9 +62,15 @@ glance-api
 cindernodetype=`cat /etc/openstack-control-script-config/cinder-nodetype`
 case $cindernodetype in
 "allinone")
+	if [ -f /etc/openstack-control-script-config/keystone-http-service-installed ]
+	then
+		cinderapache=""
+	else
+		cinderapache="apache2"
+	fi
 	svccinder=(
 	"
-	apache2
+	$cinderapache
 	cinder-scheduler
 	cinder-volume
 	"
@@ -147,12 +153,18 @@ fi
 # Nova. Index=5
 if [ -f /etc/openstack-control-script-config/nova-full-installed ]
 then
+	if [ -f /etc/openstack-control-script-config/keystone-http-service-installed ]
+	then
+		novaapache=""
+	else
+		novaapache="apache2"
+	fi
 	if [ -f /etc/openstack-control-script-config/nova-without-compute ]
 	then
 		svcnova=(
 			"
 			nova-api
-			apache2
+			$novaapache
 			nova-scheduler
 			nova-conductor
 			nova-console
@@ -164,7 +176,7 @@ then
 		svcnova=(
 			"
 			nova-api
-			apache2
+			$novaapache
 			nova-scheduler
 			nova-conductor
 			nova-console
@@ -198,11 +210,17 @@ fi
 
 if [ -f /etc/openstack-control-script-config/ceilometer-full-installed ]
 then
+	if [ -f /etc/openstack-control-script-config/keystone-http-service-installed ]
+	then
+		ceiloapache=""
+	else
+		ceiloapache="apache2"
+	fi
 	if [ -f /etc/openstack-control-script-config/ceilometer-without-compute ]
 	then
 		svcceilometer=(
 			"
-			apache2
+			$ceiloapache
 			gnocchi-metricd
 			ceilometer-agent-central
 			ceilometer-collector
@@ -215,7 +233,7 @@ then
 	else
 		svcceilometer=(
 			"
-			apache2
+			$ceiloapache
 			gnocchi-metricd
 			ceilometer-agent-compute
 			ceilometer-agent-central
