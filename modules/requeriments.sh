@@ -244,6 +244,15 @@ then
 	modprobe vhost_net
 fi
 
+# Final secuence:
+echo "FINAL LIBVIRTD CHECK:"
+aa-complain /etc/apparmor.d/usr.sbin.libvirtd
+systemctl stop libvirtd
+systemctl stop virtlogd.socket
+systemctl start virtlogd.socket
+systemctl start libvirtd
+systemctl status libvirtd
+
 
 testlibvirt=`dpkg -l libvirt-daemon-system 2>/dev/null|tail -n 1|grep -ci ^ii`
 
