@@ -202,8 +202,8 @@ echo ""
 echo ""
 echo "Applying IPTABLES rules"
 
-iptables -A INPUT -p tcp -m multiport --dports 8386 -j ACCEPT
-/etc/init.d/netfilter-persistent save
+# iptables -A INPUT -p tcp -m multiport --dports 8386 -j ACCEPT
+# /etc/init.d/netfilter-persistent save
 
 echo "Done"
 

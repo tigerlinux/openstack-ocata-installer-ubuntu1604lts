@@ -75,6 +75,8 @@ case $cindernodetype in
 	DEBIAN_FRONTEND=noninteractive aptitude -y install cinder-api cinder-common cinder-scheduler \
 		cinder-volume python-cinderclient tgt open-iscsi
 	DEBIAN_FRONTEND=noninteractive aptitude -y install rpcbind
+	sed -r -i "s/Listen\ 8776/Listen\ $cinderhost:8776/g" /etc/apache2/conf-enabled/cinder-wsgi.conf
+	systemctl restart apache2
 	;;
 "controller")
 	DEBIAN_FRONTEND=noninteractive aptitude -y install apache2 libapache2-mod-wsgi
@@ -85,6 +87,8 @@ case $cindernodetype in
 	DEBIAN_FRONTEND=noninteractive  aptitude -y install libzookeeper-mt2 libcfg6 libcpg4 sheepdog
 	DEBIAN_FRONTEND=noninteractive aptitude -y install cinder-api cinder-common cinder-scheduler \
 		python-cinderclient
+	sed -r -i "s/Listen\ 8776/Listen\ $cinderhost:8776/g" /etc/apache2/conf-enabled/cinder-wsgi.conf
+	systemctl restart apache2
 	;;
 "storage")
 	DEBIAN_FRONTEND=noninteractive  aptitude -y install libzookeeper-mt2 libcfg6 libcpg4 sheepdog
@@ -132,7 +136,7 @@ echo "Configuring Cinder"
 #
 
  
-crudini --set /etc/cinder/cinder.conf DEFAULT osapi_volume_listen 0.0.0.0
+crudini --set /etc/cinder/cinder.conf DEFAULT osapi_volume_listen $cinderhost
 crudini --set /etc/cinder/cinder.conf DEFAULT api_paste_config /etc/cinder/api-paste.ini
 crudini --set /etc/cinder/cinder.conf DEFAULT glance_host $glancehost
 crudini --set /etc/cinder/cinder.conf DEFAULT auth_strategy keystone
@@ -431,10 +435,10 @@ esac
 echo "Done"
 
 echo ""
-echo "Applying IPTABLES rules"
+# echo "Applying IPTABLES rules"
 
-iptables -A INPUT -p tcp -m multiport --dports 3260,8776 -j ACCEPT
-/etc/init.d/netfilter-persistent save
+# iptables -A INPUT -p tcp -m multiport --dports 3260,8776 -j ACCEPT
+# /etc/init.d/netfilter-persistent save
 
 
 

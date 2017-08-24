@@ -256,8 +256,8 @@ crudini --set /etc/ceilometer/ceilometer.conf DEFAULT auth_strategy keystone
 crudini --set /etc/ceilometer/ceilometer.conf DEFAULT log_dir /var/log/ceilometer
 crudini --set /etc/ceilometer/ceilometer.conf DEFAULT host `hostname`
 crudini --set /etc/ceilometer/ceilometer.conf DEFAULT pipeline_cfg_file pipeline.yaml
-crudini --set /etc/ceilometer/ceilometer.conf collector workers 2
-crudini --set /etc/ceilometer/ceilometer.conf notification workers 2
+crudini --set /etc/ceilometer/ceilometer.conf collector workers $ceilometerworkers
+crudini --set /etc/ceilometer/ceilometer.conf notification workers $ceilometerworkers
 crudini --set /etc/ceilometer/ceilometer.conf DEFAULT hypervisor_inspector libvirt
  
 crudini --del /etc/ceilometer/ceilometer.conf DEFAULT sql_connection > /dev/null 2>&1
@@ -322,7 +322,7 @@ crudini --set /etc/ceilometer/ceilometer.conf alarm evaluation_service ceilomete
 crudini --set /etc/ceilometer/ceilometer.conf alarm partition_rpc_topic alarm_partition_coordination
 
 crudini --set /etc/ceilometer/ceilometer.conf api port 8777
-crudini --set /etc/ceilometer/ceilometer.conf api host 0.0.0.0
+crudini --set /etc/ceilometer/ceilometer.conf api host $ceilometerhost
  
 crudini --set /etc/ceilometer/ceilometer.conf DEFAULT heat_control_exchange heat
 crudini --set /etc/ceilometer/ceilometer.conf DEFAULT control_exchange ceilometer
@@ -384,7 +384,7 @@ then
 	DEBIAN_FRONTEND=noninteractive aptitude -y install memcached python-memcache
 	systemctl start memcached
 	systemctl enable memcached
-	sed -r -i 's/127.0.0.1/0.0.0.0/g' /etc/memcached.conf
+	sed -r -i "s/127.0.0.1/$ceilometerhost/g" /etc/memcached.conf
 	systemctl restart memcached
 	DEBIAN_FRONTEND=noninteractive aptitude -y install apache2 libapache2-mod-wsgi
 	a2enmod wsgi
@@ -472,8 +472,11 @@ then
 		crudini --set /etc/aodh/aodh.conf service_credentials project_domain_name $keystonedomain
 		crudini --set /etc/aodh/aodh.conf service_credentials user_domain_name $keystonedomain
 		crudini --set /etc/aodh/aodh.conf service_credentials project_name $keystoneservicestenant
+		crudini --set /etc/aodh/aodh.conf evaluator workers $aodhworkers
+                crudini --set /etc/aodh/aodh.conf listener workers $aodhworkers
+                crudini --set /etc/aodh/aodh.conf notifier workers $aodhworkers
 		crudini --set /etc/aodh/aodh.conf api port 8042
-		crudini --set /etc/aodh/aodh.conf api host 0.0.0.0
+		crudini --set /etc/aodh/aodh.conf api host $aodhhost
 		crudini --set /etc/aodh/aodh.conf api paste_config api_paste.ini
 		crudini --set /etc/aodh/aodh.conf DEFAULT transport_url rabbit://$brokeruser:$brokerpass@$messagebrokerhost:5672/$brokervhost
 		crudini --set /etc/aodh/aodh.conf DEFAULT rpc_backend rabbit
@@ -500,13 +503,14 @@ then
 		DEBIAN_FRONTEND=noninteractive aptitude -y install memcached python-memcache apache2 libapache2-mod-wsgi
 		systemctl start memcached
 		systemctl enable memcached
-		sed -r -i 's/127.0.0.1/0.0.0.0/g' /etc/memcached.conf
+		sed -r -i "s/127.0.0.1/$aodhhost/g" /etc/memcached.conf
 		systemctl restart memcached
 		a2enmod wsgi
 		# cp -v ./libs/aodh/wsgi-aodh.conf /etc/apache2/sites-available/wsgi-aodh.conf
 		mkdir -p /var/www/cgi-bin/aodh
 		cp -v ./libs/aodh/app.wsgi /var/www/cgi-bin/aodh/app.wsgi
 		# a2ensite wsgi-aodh
+		sed -r -i "s/Listen\ 8042/Listen\ $aodhhost:8042/g" /etc/apache2/sites-enabled/aodh-api.conf
 		systemctl stop apache2
 		sleep 5
 		systemctl start apache2
@@ -526,10 +530,10 @@ cat ./libs/ceilometer/polling.yaml > /etc/ceilometer/polling.yaml
 sed -r -i "s/METRICINTERVAL/$ceilointerval/g" /etc/ceilometer/polling.yaml
 
 echo ""
-echo "Applying IPTABLES rules"
+# echo "Applying IPTABLES rules"
 
-iptables -A INPUT -p tcp -m multiport --dports 8777,8041,8042,$mondbport -j ACCEPT
-/etc/init.d/netfilter-persistent save
+# iptables -A INPUT -p tcp -m multiport --dports 8777,8041,8042,$mondbport -j ACCEPT
+# /etc/init.d/netfilter-persistent save
 
 # With ceilometer ready, it's time to configure gnocchi
 
@@ -568,10 +572,12 @@ then
 	# crudini --set /etc/gnocchi/gnocchi.conf DEFAULT verbose false
 	crudini --set /etc/gnocchi/gnocchi.conf DEFAULT log_file /var/log/gnocchi/gnocchi.log
 
-	crudini --set /etc/gnocchi/gnocchi.conf api host 0.0.0.0
+	crudini --set /etc/gnocchi/gnocchi.conf api host $gnocchihost
 	crudini --set /etc/gnocchi/gnocchi.conf api port 8041
 	crudini --set /etc/gnocchi/gnocchi.conf api paste_config /etc/gnocchi/api-paste.ini
 	crudini --set /etc/gnocchi/gnocchi.conf api auth_mode keystone
+
+	crudini --set /etc/gnocchi/gnocchi.conf metricd workers $gnocchiworkers
 
 	case $dbflavor in
 	"mysql")
@@ -622,6 +628,7 @@ then
 	mkdir -p /var/www/cgi-bin/gnocchi
 	cp -v ./libs/gnocchi/app.wsgi /var/www/cgi-bin/gnocchi/app.wsgi
 	a2ensite wsgi-gnocchi
+	sed -r -i "s/Listen\ 8041/Listen\ $gnocchihost:8041/g" /etc/apache2/sites-enabled/wsgi-gnocchi.conf
 	systemctl stop apache2
 	sleep 5
 	systemctl start apache2

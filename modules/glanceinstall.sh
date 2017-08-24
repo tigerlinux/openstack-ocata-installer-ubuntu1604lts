@@ -102,7 +102,7 @@ crudini --set /etc/glance/glance-api.conf DEFAULT debug False
 crudini --set /etc/glance/glance-api.conf glance_store default_store file
 crudini --set /etc/glance/glance-api.conf glance_store stores "file,http"
 crudini --set /etc/glance/glance-api.conf glance_store filesystem_store_datadir /var/lib/glance/images/
-crudini --set /etc/glance/glance-api.conf DEFAULT bind_host 0.0.0.0
+crudini --set /etc/glance/glance-api.conf DEFAULT bind_host $glancehost
 crudini --set /etc/glance/glance-api.conf DEFAULT bind_port 9292
 crudini --set /etc/glance/glance-api.conf DEFAULT log_file /var/log/glance/api.log
 crudini --set /etc/glance/glance-api.conf DEFAULT backlog 4096
@@ -121,10 +121,10 @@ case $dbflavor in
 esac
  
  
-glanceworkers=`grep processor.\*: /proc/cpuinfo |wc -l`
+# glanceworkers=`grep processor.\*: /proc/cpuinfo |wc -l`
  
 crudini --set /etc/glance/glance-api.conf DEFAULT workers $glanceworkers
-crudini --set /etc/glance/glance-api.conf DEFAULT registry_host 0.0.0.0
+crudini --set /etc/glance/glance-api.conf DEFAULT registry_host $glancehost
 crudini --set /etc/glance/glance-api.conf DEFAULT registry_port 9191
 crudini --set /etc/glance/glance-api.conf DEFAULT registry_client_protocol http
 
@@ -184,7 +184,7 @@ crudini --set /etc/glance/glance-registry.conf paste_deploy flavor keystone
  
  
 crudini --set /etc/glance/glance-registry.conf DEFAULT debug False
-crudini --set /etc/glance/glance-registry.conf DEFAULT bind_host 0.0.0.0
+crudini --set /etc/glance/glance-registry.conf DEFAULT bind_host $glancehost
 crudini --set /etc/glance/glance-registry.conf DEFAULT bind_port 9191
 crudini --set /etc/glance/glance-registry.conf DEFAULT log_file /var/log/glance/registry.log
 crudini --set /etc/glance/glance-registry.conf DEFAULT backlog 4096
@@ -210,7 +210,7 @@ crudini --set /etc/glance/glance-cache.conf DEFAULT image_cache_dir /var/lib/gla
 crudini --set /etc/glance/glance-cache.conf DEFAULT image_cache_stall_time 86400
 crudini --set /etc/glance/glance-cache.conf DEFAULT image_cache_invalid_entry_grace_period 3600
 crudini --set /etc/glance/glance-cache.conf DEFAULT image_cache_max_size 10737418240
-crudini --set /etc/glance/glance-cache.conf DEFAULT registry_host 0.0.0.0
+crudini --set /etc/glance/glance-cache.conf DEFAULT registry_host $glancehost
 crudini --set /etc/glance/glance-cache.conf DEFAULT registry_port 9191
 crudini --set /etc/glance/glance-cache.conf DEFAULT admin_tenant_name $keystoneservicestenant
 crudini --set /etc/glance/glance-cache.conf DEFAULT admin_user $glanceuser
@@ -242,9 +242,9 @@ sync
 #
 
 echo ""
-echo "Applying IPTABLES rules"
-iptables -A INPUT -p tcp -m multiport --dports 9292 -j ACCEPT
-/etc/init.d/netfilter-persistent save
+# echo "Applying IPTABLES rules"
+# iptables -A INPUT -p tcp -m multiport --dports 9292 -j ACCEPT
+# /etc/init.d/netfilter-persistent save
 echo "Done"
 echo ""
 

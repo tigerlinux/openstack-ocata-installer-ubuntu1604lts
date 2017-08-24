@@ -130,7 +130,7 @@ systemctl disable keystone
 systemctl start memcached
 systemctl enable memcached
 
-sed -r -i 's/127.0.0.1/0.0.0.0/g' /etc/memcached.conf
+sed -r -i "s/127.0.0.1/$keystonehost/g" /etc/memcached.conf
 
 systemctl restart memcached
 
@@ -282,6 +282,11 @@ systemctl stop apache2
 systemctl start apache2
 systemctl enable apache2
 
+sed -r -i "s/Listen\ 5000/Listen\ $keystonehost:5000/g" /etc/apache2/sites-enabled/keystone.conf
+sed -r -i "s/Listen\ 35357/Listen\ $keystonehost:35357/g" /etc/apache2/sites-enabled/keystone.conf
+
+systemctl restart apache2
+
 echo "Done"
 
 sync
@@ -388,10 +393,10 @@ openstack role list
 #
 
 echo ""
-echo "Applying IPTABLES rules"
+# echo "Applying IPTABLES rules"
 
-iptables -A INPUT -p tcp -m multiport --dports 5000,11211,35357 -j ACCEPT
-/etc/init.d/netfilter-persistent save
+# iptables -A INPUT -p tcp -m multiport --dports 5000,11211,35357 -j ACCEPT
+# /etc/init.d/netfilter-persistent save
 
 keystonetest=`dpkg -l keystone 2>/dev/null|tail -n 1|grep -ci ^ii`
 if [ $keystonetest == "0" ]

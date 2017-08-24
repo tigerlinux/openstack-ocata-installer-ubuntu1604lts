@@ -363,6 +363,15 @@ fi
 
 echo "Cleaning UP IPTABLES"
 
+iptables -F
+iptables -P INPUT ACCEPT
+iptables -P FORWARD ACCEPT
+iptables -P OUTPUT ACCEPT
+iptables -t nat -F
+iptables -t mangle -F
+iptables -F
+iptables -X
+
 /etc/init.d/netfilter-persistent flush
 /etc/init.d/netfilter-persistent save
 

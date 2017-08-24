@@ -30,6 +30,15 @@ fi
 rm -rf /tmp/keystone-signing-*
 rm -rf /tmp/cd_gen_*
 
+# Let's make apt really unattended:
+
+cat<<EOF >/etc/apt/apt.conf.d/99aptget-reallyunattended
+Dpkg::Options {
+   "--force-confdef";
+   "--force-confold";
+}
+EOF
+
 #
 # Then we begin some verifications
 #
@@ -203,11 +212,12 @@ else
 		killall -9 dnsmasq > /dev/null 2>&1
 		killall -9 libvirtd > /dev/null 2>&1
 		/etc/init.d/netfilter-persistent flush
-		iptables -A INPUT -p tcp -m multiport --dports 22 -j ACCEPT
+		# iptables -A INPUT -p tcp -m multiport --dports 22 -j ACCEPT
 		/etc/init.d/netfilter-persistent save
 		sed -i 's/#listen_tls = 0/listen_tls = 0/g' /etc/libvirt/libvirtd.conf
 		sed -i 's/#listen_tcp = 1/listen_tcp = 1/g' /etc/libvirt/libvirtd.conf
 		sed -i 's/#auth_tcp = "sasl"/auth_tcp = "none"/g' /etc/libvirt/libvirtd.conf
+		sed -i "s/^#listen_addr\ =.*/listen_addr\ =\ \"$nova_computehost\"/g" /etc/libvirt/libvirtd.conf
 		cat /etc/default/libvirtd > /etc/default/libvirtd.BACKUP
 		echo "start_libvirtd=\"yes\"" > /etc/default/libvirtd
 		echo "libvirtd_opts=\"--listen\"" >> /etc/default/libvirtd
@@ -221,8 +231,9 @@ else
         	zerofree zfs-fuse virt-top curl nmon fuseiso9660 libiso9660-8 genisoimage sudo sysfsutils \
 	        glusterfs-client glusterfs-common nfs-client nfs-common libguestfs-tools arptables
 
-	iptables -A INPUT -p tcp -m multiport --dports 16509 -j ACCEPT
-	/etc/init.d/netfilter-persistent save
+	# iptables -A INPUT -p tcp -m multiport --dports 16509 -j ACCEPT
+	# /etc/init.d/netfilter-persistent save
+	./modules/firewall-master-reset.sh
 
 	apt-get -y install apparmor-utils
 	# aa-disable /etc/apparmor.d/usr.sbin.libvirtd

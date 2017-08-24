@@ -83,10 +83,10 @@ fi
 # If the broker installation was successfull, we proceed to apply IPTABLES rules
 #
 
-echo "Applying IPTABLES rules"
+# echo "Applying IPTABLES rules"
 
-iptables -I INPUT -p tcp -m tcp --dport 5672 -j ACCEPT
-/etc/init.d/netfilter-persistent save
+# iptables -I INPUT -p tcp -m tcp --dport 5672 -j ACCEPT
+# /etc/init.d/netfilter-persistent save
 
 
 echo "Done"

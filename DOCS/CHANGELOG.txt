@@ -1,3 +1,12 @@
+1.2.0.ub1604lts - August 24, 2017
+
+- Completely reworked security model.
+- Added extra variables on the main-config.rc file
+  used to fine-tune iptables rules applied to the
+  openstack server.
+- Added new variables on the main-config.rc file used
+  to fine-tune workers on most openstack modules.
+
 1.1.8.ub1604lts - July 26, 2017
 
 - Added extra check secuences for possible failures

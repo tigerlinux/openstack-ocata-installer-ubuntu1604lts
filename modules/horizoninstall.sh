@@ -108,7 +108,7 @@ DEBIAN_FRONTEND=noninteractive aptitude -y purge libapache2-mod-python
 a2dismod python > /dev/null 2>&1
 a2enmod wsgi
 
-sed -r -i 's/127.0.0.1/0.0.0.0/g' /etc/memcached.conf
+sed -r -i "s/127.0.0.1/$horizonhost/g" /etc/memcached.conf
 
 systemctl restart memcached
 systemctl enable memcached
@@ -254,11 +254,11 @@ systemctl restart memcached
 
 echo "Done"
 echo ""
-echo "Applying IPTABLES rules"
-echo ""
+# echo "Applying IPTABLES rules"
+# echo ""
 
-iptables -A INPUT -p tcp -m multiport --dports 80,443,11211 -j ACCEPT
-/etc/init.d/netfilter-persistent save
+# iptables -A INPUT -p tcp -m multiport --dports 80,443,11211 -j ACCEPT
+# /etc/init.d/netfilter-persistent save
 
 echo "Done"
 echo ""

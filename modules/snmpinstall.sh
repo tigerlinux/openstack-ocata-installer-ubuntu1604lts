@@ -111,12 +111,12 @@ restart snmpd
 #
 
 echo ""
-echo "Applyring IPTABLES rules"
-echo ""
+# echo "Applyring IPTABLES rules"
+# echo ""
 
-iptables -I INPUT -p udp -m udp --dport 161 -j ACCEPT
-iptables -I INPUT -p tcp -m tcp --dport 161 -j ACCEPT
-/etc/init.d/netfilter-persistent save
+# iptables -I INPUT -p udp -m udp --dport 161 -j ACCEPT
+# iptables -I INPUT -p tcp -m tcp --dport 161 -j ACCEPT
+# /etc/init.d/netfilter-persistent save
 
 # NOTA: Como el módulo de snmp NO ES crítico, no nos molestamos en siquiera
 # revisar si se instaló o no - wtf !!!.

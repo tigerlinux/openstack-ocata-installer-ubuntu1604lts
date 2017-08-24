@@ -77,8 +77,8 @@ then
 		echo "GRANT ALL PRIVILEGES ON *.* TO '$mysqldbadm'@'%' IDENTIFIED BY '$mysqldbpassword' WITH GRANT OPTION;"|mysql
 		echo "GRANT ALL PRIVILEGES ON *.* TO '$mysqldbadm'@'$dbbackendhost' IDENTIFIED BY '$mysqldbpassword' WITH GRANT OPTION;"|mysql
 		echo "FLUSH PRIVILEGES;"|mysql
-		iptables -A INPUT -p tcp -m multiport --dports $mysqldbport -j ACCEPT
-		/etc/init.d/netfilter-persistent save
+		# iptables -A INPUT -p tcp -m multiport --dports $mysqldbport -j ACCEPT
+		# /etc/init.d/netfilter-persistent save
 		rm -f /tmp/mysql-seed.txt
 		mkdir -p /etc/systemd/system/mysql.service.d/
 		echo "[Service]" > /etc/systemd/system/mysql.service.d/limits.conf
@@ -112,8 +112,8 @@ then
 		sync
 		echo "*:*:*:$psqldbadm:$psqldbpassword" > /root/.pgpass
 		chmod 0600 /root/.pgpass
-		iptables -A INPUT -p tcp -m multiport --dports $psqldbport -j ACCEPT
-		/etc/init.d/netfilter-persistent save
+		# iptables -A INPUT -p tcp -m multiport --dports $psqldbport -j ACCEPT
+		# /etc/init.d/netfilter-persistent save
 		echo "PostgreSQL Server Installed"
 		;;
 	esac
