@@ -59,39 +59,56 @@ glance-api
 )
 
 # Cinder. Index=3
-cindernodetype=`cat /etc/openstack-control-script-config/cinder-nodetype`
-case $cindernodetype in
-"allinone")
-	if [ -f /etc/openstack-control-script-config/keystone-http-service-installed ]
-	then
-		cinderapache=""
-	else
-		cinderapache="apache2"
-	fi
-	svccinder=(
-	"
-	$cinderapache
-	cinder-scheduler
-	cinder-volume
-	"
-	)
-	;;
-"controller")
-	svccinder=(
-	"
-	apache2
-	cinder-scheduler
-	"
-	)
-	;;
-"storage")
-	svccinder=(
-	"
-	cinder-volume
-	"
-	)
-	;;
-esac
+if [ -f /etc/openstack-control-script-config/cinder-nodetype ]
+then
+	cindernodetype=`cat /etc/openstack-control-script-config/cinder-nodetype`
+	case $cindernodetype in
+	"allinone")
+		if [ -f /etc/openstack-control-script-config/keystone-http-service-installed ]
+		then
+			cinderapache=""
+		else
+			cinderapache="apache2"
+		fi
+		svccinder=(
+		"
+		$cinderapache
+		cinder-scheduler
+		cinder-volume
+		"
+		)
+		;;
+	"controller")
+		svccinder=(
+		"
+		apache2
+		cinder-scheduler
+		"
+		)
+		;;
+	"storage")
+		svccinder=(
+		"
+		cinder-volume
+		"
+		)
+		;;
+	esac
+else
+        if [ -f /etc/openstack-control-script-config/keystone-http-service-installed ]
+        then
+                cinderapache=""
+        else
+                cinderapache="apache2"
+        fi
+        svccinder=(
+        "
+        $cinderapache
+        cinder-scheduler
+        cinder-volume
+        "
+        )
+fi
 
 # Neutron. Index=4
 if [ -f /etc/openstack-control-script-config/neutron-full-installed ]

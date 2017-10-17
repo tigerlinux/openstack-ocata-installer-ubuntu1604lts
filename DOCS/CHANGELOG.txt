@@ -1,3 +1,10 @@
+1.2.1.ub1604lts - October 17, 2017
+
+- Added missing nova-placement port on firewall master
+  script.
+- Updated cinder-services sequence on openstack-control.sh
+  script.
+
 1.2.0.ub1604lts - August 24, 2017
 
 - Completely reworked security model.
