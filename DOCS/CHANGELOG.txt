@@ -1,3 +1,9 @@
+1.2.2.ub1604lts - November 01, 2017
+
+- Added extra firewall rules to open vncproxy/spicehtml5 ports
+  to the same origin network used by Horizon.
+- Added extra config items to neutron install module.
+
 1.2.1.ub1604lts - October 17, 2017
 
 - Added missing nova-placement port on firewall master
