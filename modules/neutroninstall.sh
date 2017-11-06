@@ -411,7 +411,8 @@ then
 	echo "#" >> /etc/neutron/neutron_vpnaas.conf
 	crudini --set /etc/neutron/vpn_agent.ini DEFAULT debug False
 	crudini --set /etc/neutron/vpn_agent.ini DEFAULT interface_driver "neutron.agent.linux.interface.OVSInterfaceDriver"
-	crudini --set /etc/neutron/vpn_agent.ini DEFAULT ovs_use_veth True
+	# crudini --set /etc/neutron/vpn_agent.ini DEFAULT ovs_use_veth True
+	crudini --set /etc/neutron/vpn_agent.ini DEFAULT ovs_use_veth False
 	crudini --set /etc/neutron/vpn_agent.ini DEFAULT use_namespaces True
 	# Deprecated !
 	# crudini --set /etc/neutron/vpn_agent.ini DEFAULT external_network_bridge ""
@@ -424,7 +425,8 @@ if [ $neutronmetering == "yes" ]
 then
 	echo "#" >> /etc/neutron/metering_agent.ini
 	crudini --set /etc/neutron/metering_agent.ini DEFAULT debug False
-	crudini --set /etc/neutron/metering_agent.ini DEFAULT ovs_use_veth True
+	# crudini --set /etc/neutron/metering_agent.ini DEFAULT ovs_use_veth True
+	crudini --set /etc/neutron/metering_agent.ini DEFAULT ovs_use_veth False
 	crudini --set /etc/neutron/metering_agent.ini DEFAULT use_namespaces True
 	crudini --set /etc/neutron/metering_agent.ini DEFAULT driver neutron.services.metering.drivers.iptables.iptables_driver.IptablesMeteringDriver
 	crudini --set /etc/neutron/metering_agent.ini DEFAULT interface_driver neutron.agent.linux.interface.OVSInterfaceDriver
@@ -440,7 +442,8 @@ echo "#" >> /etc/neutron/l3_agent.ini
  
 crudini --set /etc/neutron/l3_agent.ini DEFAULT debug False
 crudini --set /etc/neutron/l3_agent.ini DEFAULT interface_driver neutron.agent.linux.interface.OVSInterfaceDriver
-crudini --set /etc/neutron/l3_agent.ini DEFAULT ovs_use_veth True
+# crudini --set /etc/neutron/l3_agent.ini DEFAULT ovs_use_veth True
+crudini --set /etc/neutron/l3_agent.ini DEFAULT ovs_use_veth False
 crudini --set /etc/neutron/l3_agent.ini DEFAULT use_namespaces True
 crudini --set /etc/neutron/l3_agent.ini DEFAULT handle_internal_only_routers True
 crudini --set /etc/neutron/l3_agent.ini DEFAULT send_arp_for_ha 3
@@ -472,7 +475,8 @@ echo "#" >> /etc/neutron/dhcp_agent.ini
 crudini --set /etc/neutron/dhcp_agent.ini DEFAULT debug False
 crudini --set /etc/neutron/dhcp_agent.ini DEFAULT resync_interval 30
 crudini --set /etc/neutron/dhcp_agent.ini DEFAULT interface_driver neutron.agent.linux.interface.OVSInterfaceDriver
-crudini --set /etc/neutron/dhcp_agent.ini DEFAULT ovs_use_veth True
+# crudini --set /etc/neutron/dhcp_agent.ini DEFAULT ovs_use_veth True
+crudini --set /etc/neutron/dhcp_agent.ini DEFAULT ovs_use_veth False
 crudini --set /etc/neutron/dhcp_agent.ini DEFAULT dhcp_driver neutron.agent.linux.dhcp.Dnsmasq
 crudini --set /etc/neutron/dhcp_agent.ini DEFAULT ovs_integration_bridge $integration_bridge
 crudini --set /etc/neutron/dhcp_agent.ini DEFAULT use_namespaces True
@@ -617,7 +621,8 @@ echo "#" >> /etc/neutron/services_lbaas.conf
 # Old v1 lbaas entries keept... just in case
 crudini --set /etc/neutron/lbaas_agent.ini DEFAULT periodic_interval 10
 crudini --set /etc/neutron/lbaas_agent.ini DEFAULT interface_driver neutron.agent.linux.interface.OVSInterfaceDriver
-crudini --set /etc/neutron/lbaas_agent.ini DEFAULT ovs_use_veth True
+# crudini --set /etc/neutron/lbaas_agent.ini DEFAULT ovs_use_veth True
+crudini --set /etc/neutron/lbaas_agent.ini DEFAULT ovs_use_veth False
 crudini --set /etc/neutron/lbaas_agent.ini DEFAULT device_driver neutron_lbaas.drivers.haproxy.namespace_driver.HaproxyNSDriver
 crudini --set /etc/neutron/lbaas_agent.ini DEFAULT use_namespaces True
 crudini --set /etc/neutron/lbaas_agent.ini haproxy user_group neutron
