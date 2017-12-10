@@ -1,3 +1,8 @@
+1.2.3.1.ub1604lts - December 10, 2017
+
+- Corrected some typos on "trove-sahara-lbaasv2-dashboard-install.txt"
+  document.
+
 1.2.3.ub1604lts - November 06, 2017
 
 - Changed "ovs_use_veth" to False on all sections of neutron
